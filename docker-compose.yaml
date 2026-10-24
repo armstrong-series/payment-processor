@@ -1,0 +1,69 @@
+services:
+  ataraxia:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      PAYMENTS_FILE: /app/data/payments.json
+      PAYMENT_PROCESSING_DELAY_MS: 5000
+      WEBHOOK_URL: http://convoy:5005
+      WEBHOOK_PROJECT_ID: ${WEBHOOK_PROJECT_ID:-}
+      WEBHOOK_API_KEY: ${WEBHOOK_API_KEY:-}
+      WEBHOOK_ENABLED: ${WEBHOOK_ENABLED:-false}
+    volumes:
+      - ./src:/app/src
+      - payment_data:/app/data
+    depends_on:
+      - convoy
+
+  convoy:
+    image: getconvoy/convoy:latest
+    restart: unless-stopped
+    ports:
+      - "5005:5005"
+    volumes:
+      - convoy_data:/var/lib/convoy
+    environment:
+      CONVOY_DB_TYPE: postgres
+      CONVOY_DB_DSN: postgres://postgres:password@postgres:5432/convoy?sslmode=disable
+
+      CONVOY_REDIS_TYPE: redis
+      CONVOY_REDIS_SCHEME: redis
+      CONVOY_REDIS_HOST: redis
+      CONVOY_REDIS_PORT: 6379
+      CONVOY_REDIS_DATABASE: "0"
+
+      CONVOY_JWT_SECRET: ${CONVOY_JWT_SECRET}
+      CONVOY_JWT_REFRESH_SECRET: ${CONVOY_JWT_REFRESH_SECRET}
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: convoy
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+
+volumes:
+  payment_data:
+  convoy_data:
+  pg_data:
+  redis_data:
