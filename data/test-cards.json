@@ -1,0 +1,82 @@
+[
+  {
+    "id": "test-card-visa-success",
+    "brand": "visa",
+    "number": "4242424242424242",
+    "last4": "4242",
+    "expiryMonth": 12,
+    "expiryYear": 2030,
+    "outcome": "succeeded",
+    "enabled": true
+  },
+  {
+    "id": "test-card-visa-failed",
+    "brand": "visa",
+    "number": "4000000000000002",
+    "last4": "0002",
+    "expiryMonth": 12,
+    "expiryYear": 2030,
+    "outcome": "failed",
+    "enabled": true
+  },
+  {
+    "id": "test-card-mastercard-success",
+    "brand": "mastercard",
+    "number": "5555555555554444",
+    "last4": "4444",
+    "expiryMonth": 12,
+    "expiryYear": 2030,
+    "outcome": "succeeded",
+    "enabled": true
+  },
+  {
+    "id": "test-card-mastercard-failed",
+    "brand": "mastercard",
+    "number": "5105105105105100",
+    "last4": "5100",
+    "expiryMonth": 12,
+    "expiryYear": 2030,
+    "outcome": "failed",
+    "enabled": true
+  },
+  {
+    "id": "test-card-amex-success",
+    "brand": "amex",
+    "number": "378282246310005",
+    "last4": "0005",
+    "expiryMonth": 12,
+    "expiryYear": 2030,
+    "outcome": "succeeded",
+    "enabled": true
+  },
+  {
+    "id": "test-card-amex-failed",
+    "brand": "amex",
+    "number": "371449635398431",
+    "last4": "8431",
+    "expiryMonth": 12,
+    "expiryYear": 2030,
+    "outcome": "failed",
+    "enabled": true
+  },
+  {
+    "id": "test-card-verve-success",
+    "brand": "verve",
+    "number": "5060991234560000007",
+    "last4": "0007",
+    "expiryMonth": 12,
+    "expiryYear": 2030,
+    "outcome": "succeeded",
+    "enabled": true
+  },
+  {
+    "id": "test-card-verve-failed",
+    "brand": "verve",
+    "number": "5060996543210000000",
+    "last4": "0000",
+    "expiryMonth": 12,
+    "expiryYear": 2030,
+    "outcome": "failed",
+    "enabled": true
+  }
+]

@@ -50,9 +50,9 @@ export class PaymentService {
       return undefined;
     }
 
-    if (existing.status === "succeeded" || existing.status === "failed") {
-      throw new PaymentStatusError(`Payment is already ${existing.status}.`);
-    }
+    // if (existing.status === "succeeded" || existing.status === "failed") {
+    //   throw new PaymentStatusError(`Payment is already ${existing.status}.`);
+    // }
 
     const updated = await paymentRepository.update(id, {
       status,

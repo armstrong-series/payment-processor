@@ -1,39 +1,54 @@
-import { randomUUID } from "node:crypto";
-import { dirname, resolve } from "node:path";
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
+import { dirname, resolve } from "node:path";
+import { randomUUID } from "node:crypto";
 import { env } from "../config/env";
-import type { Payment, PaymentStatus, PaymentRow } from "../domain/payment";
-import { db } from "./database";
-import { PaymentEvent } from "../domain/events";
-
-function insertOutboxEvent(eventType: PaymentEvent, payment: Payment): void {
-  const now = new Date().toISOString();
-
-  db.prepare(
-    `
-    INSERT INTO outbox_events (
-      id, event_type, aggregate_id, payload,
-      created_at, next_attempt_at
-    ) VALUES (?, ?, ?, ?, ?, ?)
-  `
-  ).run(randomUUID(), eventType, payment.id, JSON.stringify(payment), now, now);
-}
+import type { Payment } from "../domain/payment";
 
 class PaymentRepository {
   private readonly filePath = resolve(env.paymentsFile);
   private writeQueue: Promise<void> = Promise.resolve();
 
-  private async readAll(): Promise<Payment[]> {
+  private async ensureFileExists(): Promise<void> {
+    await mkdir(dirname(this.filePath), { recursive: true });
+
     try {
-      const content = await readFile(this.filePath, "utf8");
-      return JSON.parse(content) as Payment[];
+      await readFile(this.filePath, "utf8");
     } catch (error) {
-      if ((error as NodeJS.ErrnoException).code === "ENOENT") {
-        return [];
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
+        throw error;
       }
 
-      throw error;
+      try {
+        await writeFile(this.filePath, "[]\n", {
+          encoding: "utf8",
+          flag: "wx",
+        });
+      } catch (writeError) {
+        if ((writeError as NodeJS.ErrnoException).code !== "EEXIST") {
+          throw writeError;
+        }
+      }
     }
+  }
+
+  private async readAll(): Promise<Payment[]> {
+    await this.ensureFileExists();
+
+    const content = await readFile(this.filePath, "utf8");
+
+    if (!content.trim()) {
+      return [];
+    }
+
+    const payments: unknown = JSON.parse(content);
+
+    if (!Array.isArray(payments)) {
+      throw new Error(
+        `Invalid payment store: expected a JSON array in ${this.filePath}`
+      );
+    }
+
+    return payments as Payment[];
   }
 
   private async writeAll(payments: Payment[]): Promise<void> {
@@ -59,8 +74,11 @@ class PaymentRepository {
   async create(payment: Payment): Promise<Payment> {
     return this.serializeWrite(async () => {
       const payments = await this.readAll();
+
       payments.push(payment);
+
       await this.writeAll(payments);
+
       return payment;
     });
   }
@@ -72,6 +90,7 @@ class PaymentRepository {
 
   async findById(id: string): Promise<Payment | undefined> {
     const payments = await this.findAll();
+
     return payments.find((payment) => payment.id === id);
   }
 
@@ -88,6 +107,7 @@ class PaymentRepository {
       }
 
       payments[index] = { ...payments[index], ...changes };
+
       await this.writeAll(payments);
 
       return payments[index];

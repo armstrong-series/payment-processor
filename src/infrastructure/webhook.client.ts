@@ -24,6 +24,7 @@ class WebhookClient {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          endpoint_id: env.webhookEndpointId,
           event_type: eventType,
           data,
         }),

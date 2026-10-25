@@ -10,4 +10,5 @@ export const env = {
   webhookApiKey: process.env.WEBHOOK_API_KEY ?? "",
   webhookEnabled: process.env.WEBHOOK_ENABLED === "true",
   apiKey: process.env.API_KEY ?? "",
+  webhookEndpointId: process.env.WEBHOOK_ENDPOINT_ID ?? "",
 };

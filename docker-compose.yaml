@@ -4,13 +4,15 @@ services:
       context: .
       dockerfile: Dockerfile
       target: development
+    env_file:
+      - .env
     restart: unless-stopped
     ports:
       - "3000:3000"
     environment:
       NODE_ENV: development
       PORT: 3000
-      PAYMENTS_FILE: /app/data/payments.json
+      PAYMENTS_FILE: /data/payments.json
       PAYMENT_PROCESSING_DELAY_MS: 5000
       WEBHOOK_URL: http://convoy:5005
       WEBHOOK_PROJECT_ID: ${WEBHOOK_PROJECT_ID:-}
@@ -18,7 +20,7 @@ services:
       WEBHOOK_ENABLED: ${WEBHOOK_ENABLED:-false}
     volumes:
       - ./src:/app/src
-      - payment_data:/app/data
+      - ./data:/data
     depends_on:
       - convoy
 
