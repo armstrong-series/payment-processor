@@ -110,6 +110,24 @@ export class PaymentService {
       console.error("Payment simulation failed", { id, error });
     }
   }
+
+  async getAllPayments(page = 1, limit = 10) {
+    const payments = await this.getPayments();
+
+    const totalItems = payments.length;
+    const totalPages = Math.ceil(totalItems / limit);
+    const offset = (page - 1) * limit;
+
+    return {
+      data: payments.slice(offset, offset + limit),
+      meta: {
+        currentPage: page,
+        perPage: limit,
+        totalItems,
+        totalPages,
+      },
+    };
+  }
 }
 
 export class PaymentStatusError extends Error {

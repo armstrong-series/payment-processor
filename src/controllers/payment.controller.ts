@@ -92,6 +92,32 @@ export class PaymentController {
       next(error);
     }
   }
+
+  async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const parsedPage = Number(req.query.page ?? 1);
+      const parsedLimit = Number(req.query.limit ?? 10);
+
+      const page =
+        Number.isInteger(parsedPage) && parsedPage > 0 ? parsedPage : 1;
+
+      const limit =
+        Number.isInteger(parsedLimit) && parsedLimit > 0
+          ? Math.min(parsedLimit, 100)
+          : 10;
+
+      const result = await paymentService.getAllPayments(page, limit);
+
+      res.status(200).json({
+        message: "Payments retrieved successfully.",
+        status: "success",
+        data: result.data,
+        meta: result.meta,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export const paymentController = new PaymentController();
