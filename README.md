@@ -581,6 +581,14 @@ Avoid `docker compose down -v` unless you intentionally want to delete named vol
   pypandoc.convert_text(readme, "md", format="md", outputfile=out, extra_args=["--standalone"])
   print(f"Created {out} ({os.path.getsize(out)} bytes)")
 
+# Test
+
+Run Unit test by Jest for payment service and repository
+
+```bash
+npm test -- --runInBand
+```
+
 ## References and further reading
 
 Use the documentation that matches the Convoy image/version configured in `docker-compose.yml`. Convoy's API and environment-variable names can differ between products or versions, so verify exact request fields and configuration against the version you are running.
@@ -606,3 +614,7 @@ Use the documentation that matches the Convoy image/version configured in `docke
 - **[PostgreSQL documentation](https://www.postgresql.org/docs/)** — database setup, configuration, backup, and administration.
 
 """
+
+```
+
+```
